@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nearest Railway Station Finder</title>
+  <style>
+    :root{
+      --bg:#07131f;
+      --panel:#0f2233;
+      --panel-2:#132a3f;
+      --text:#eef5ff;
+      --muted:#b8c6d8;
+      --accent:#2dd4bf;
+      --accent-2:#fbbf24;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(45,212,191,.12), transparent 28%),
+        linear-gradient(180deg, #07131f 0%, #091827 100%);
+    }
+
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      padding:32px 18px 56px;
+    }
+
+    .hero{
+      background:linear-gradient(180deg, rgba(19,42,63,.96), rgba(10,24,37,.96));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:34px 24px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(45,212,191,.10);
+      border:1px solid rgba(45,212,191,.22);
+      color:#baf7ef;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(2rem, 5vw, 3.4rem);
+      line-height:1.05;
+      letter-spacing:-1px;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:1.08rem;
+      line-height:1.7;
+    }
+
+    .card{
+      margin-top:22px;
+      background:linear-gradient(180deg, rgba(15,34,51,.98), rgba(10,24,37,.98));
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:14px 18px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+      min-width:180px;
+    }
+
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .btn-primary{
+      background:linear-gradient(135deg, #7ef9eb, var(--accent));
+      color:#06212c;
+    }
+
+    .btn-warning{
+      background:linear-gradient(135deg, #ffe08a, var(--accent-2));
+      color:#302000;
+    }
+
+    .btn-secondary{
+      background:#243748;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .info{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      min-height:98px;
+      text-align:left;
+    }
+
+    .label{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:8px;
+    }
+
+    .value{
+      font-size:1.08rem;
+      font-weight:700;
+      line-height:1.6;
+      word-break:break-word;
+    }
+
+    .status{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      font-weight:700;
+      color:#d8e7f8;
+      text-align:left;
+    }
+
+    .station-list{
+      margin-top:22px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      text-align:left;
+    }
+
+    .station-list h3{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .station-list ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.9;
+    }
+
+    footer{
+      margin-top:24px;
+      background:linear-gradient(180deg, rgba(19,42,63,.96), rgba(10,24,37,.96));
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:22px;
+      text-align:center;
+    }
+
+    .profile{
+      width:140px;
+      height:140px;
+      object-fit:cover;
+      border-radius:20px;
+      border:1px solid var(--line);
+      margin-top:14px;
+      background:#0e1c29;
+    }
+
+    footer p{
+      margin:6px 0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    a{color:#9fe8ff;text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    @media (max-width:700px){
+      .grid{grid-template-columns:1fr}
+      button{width:100%}
+      .hero,.card,footer{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">Minimal Demo Project</div>
+      <h1>Nearest Railway Station Finder</h1>
+      <p class="sub">Detect your location, find the nearest station from the selected list, and open Google Maps to view the route.</p>
+    </section>
+
+    <section class="card">
+      <div class="buttons">
+        <button class="btn-primary" id="locBtn">Detect My Location</button>
+        <button class="btn-warning" id="distBtn" disabled>Detect My Distance</button>
+        <button class="btn-secondary" id="mapBtn" disabled>Open Google Maps</button>
+      </div>
+
+      <div class="status" id="status">Waiting for action...</div>
+
+      <div class="grid">
+        <div class="info">
+          <div class="label">Your Location</div>
+          <div class="value" id="location">Not detected yet</div>
+        </div>
+        <div class="info">
+          <div class="label">Nearest Station</div>
+          <div class="value" id="station">Not selected yet</div>
+        </div>
+        <div class="info">
+          <div class="label">Distance</div>
+          <div class="value" id="distance">Unknown</div>
+        </div>
+        <div class="info">
+          <div class="label">Map Destination</div>
+          <div class="value" id="destination">Waiting...</div>
+        </div>
+      </div>
+
+      <div class="station-list">
+        <h3>Selected Stations</h3>
+        <ul>
+          <li>Jessore Junction</li>
+          <li>Kamalapur Railway Station</li>
+          <li>Chattogram Railway Station</li>
+          <li>Parbatipur Junction</li>
+          <li>Ishwardi Junction</li>
+          <li>Rajshahi Railway Station</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>Project developed by Mahbub Hassan</strong></p>
+      <p>Trainer, Computer Operation, TTC, Manikganj</p>
+      <p>Contact: 01853363434</p>
+      <p>Email: <a href="mailto:mahbub.cedp@gmail.com">mahbub.cedp@gmail.com</a></p>
+      <p>Portfolio: <a href="https://mahbub-79.github.io" target="_blank">mahbub-79.github.io</a></p>
+      <img src="download.jpg" alt="Mahbub Hassan" class="profile" onerror="this.style.display='none'">
+    </footer>
+  </div>
+
+  <script>
+    const stations = [
+      {name:"Jessore Junction",lat:23.1539107,lon:89.2091644},
+      {name:"Kamalapur Railway Station",lat:23.7333191,lon:90.4265487},
+      {name:"Chattogram Railway Station",lat:22.3338404,lon:91.8300933},
+      {name:"Parbatipur Junction",lat:25.6531183,lon:88.91594},
+      {name:"Ishwardi Junction",lat:24.1295752,lon:89.0630083},
+      {name:"Rajshahi Railway Station",lat:24.3749845,lon:88.6085117}
+    ];
+
+    let userLat = null;
+    let userLon = null;
+    let nearest = null;
+
+    const statusEl = document.getElementById("status");
+    const locationEl = document.getElementById("location");
+    const stationEl = document.getElementById("station");
+    const distanceEl = document.getElementById("distance");
+    const destinationEl = document.getElementById("destination");
+
+    function setStatus(text){
+      statusEl.textContent = text;
+    }
+
+    function dist(lat1, lon1, lat2, lon2){
+      const R = 6371;
+      const dLat = (lat2-lat1) * Math.PI/180;
+      const dLon = (lon2-lon1) * Math.PI/180;
+      const a = Math.sin(dLat/2)**2 +
+        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function fmt(km){
+      if (km < 1) return Math.round(km * 1000) + " meters";
+      return km.toFixed(2) + " km";
+    }
+
+    document.getElementById("locBtn").onclick = () => {
+      if (!navigator.geolocation){
+        setStatus("Geolocation is not supported by this browser.");
+        return;
+      }
+
+      setStatus("Detecting your location...");
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userLat = pos.coords.latitude;
+          userLon = pos.coords.longitude;
+          nearest = null;
+
+          locationEl.textContent = userLat.toFixed(5) + ", " + userLon.toFixed(5);
+          stationEl.textContent = "Click Detect My Distance";
+          distanceEl.textContent = "Pending";
+          destinationEl.textContent = "Waiting...";
+          document.getElementById("distBtn").disabled = false;
+          document.getElementById("mapBtn").disabled = true;
+          setStatus("Location detected successfully.");
+        },
+        err => {
+          if (err.code === 1) setStatus("Location permission denied.");
+          else if (err.code === 2) setStatus("Location unavailable.");
+          else if (err.code === 3) setStatus("Location request timed out.");
+          else setStatus("Unable to detect location.");
+        },
+        { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
+      );
+    };
+
+    document.getElementById("distBtn").onclick = () => {
+      if (userLat === null || userLon === null){
+        setStatus("Please detect your location first.");
+        return;
+      }
+
+      let min = Infinity;
+      let closest = null;
+
+      stations.forEach(s => {
+        const d = dist(userLat, userLon, s.lat, s.lon);
+        if (d < min){
+          min = d;
+          closest = s;
+        }
+      });
+
+      nearest = closest;
+      stationEl.textContent = closest.name;
+      distanceEl.textContent = fmt(min);
+      destinationEl.textContent = closest.name;
+      document.getElementById("mapBtn").disabled = false;
+      setStatus("Nearest station detected.");
+    };
+
+    document.getElementById("mapBtn").onclick = () => {
+      if (!nearest) return;
+      window.open(`https://www.google.com/maps/dir/${userLat},${userLon}/${nearest.lat},${nearest.lon}`, "_blank");
+    };
+  </script>
+</body>
+</html>
