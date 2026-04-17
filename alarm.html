@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alarm System</title>
+  <style>
+    :root{
+      --bg:#07131f;
+      --panel:#102338;
+      --line:rgba(255,255,255,.08);
+      --text:#eef5ff;
+      --muted:#c7d5e5;
+      --danger:#ef4444;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      font-family:Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(239,68,68,.16), transparent 28%),
+        linear-gradient(180deg, #07131f 0%, #091827 100%);
+    }
+
+    .panel{
+      width:min(760px, 100%);
+      background:linear-gradient(180deg, rgba(16,35,56,.96), rgba(10,24,37,.98));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:34px 26px;
+      text-align:center;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.28);
+      color:#ffc9c9;
+      font-weight:700;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0 0 14px;
+      font-size:clamp(2rem, 4vw, 3rem);
+    }
+
+    p{
+      margin:0 auto;
+      max-width:560px;
+      color:var(--muted);
+      font-size:1.15rem;
+      line-height:1.8;
+    }
+
+    .note{
+      margin-top:18px;
+      font-size:.98rem;
+      color:#9fb3c8;
+    }
+  </style>
+</head>
+<body>
+  <section class="panel">
+    <div class="pill">Alarm System</div>
+    <h1>Warning Alert</h1>
+    <p>Be careful, there is a train near you. Keep a safe distance from the railway track.</p>
+    <div class="note">The alarm will play automatically after a short background delay.</div>
+  </section>
+
+  <script>
+    function playAlarm(durationMs = 10000) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const audioCtx = new AudioContextClass();
+      const masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.06;
+      masterGain.connect(audioCtx.destination);
+
+      const startTime = audioCtx.currentTime;
+      const endTime = startTime + durationMs / 1000;
+      let step = 0;
+
+      while (step < durationMs / 500) {
+        const toneStart = startTime + step * 0.5;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = "square";
+        osc.frequency.setValueAtTime(step % 2 === 0 ? 880 : 660, toneStart);
+
+        gain.gain.setValueAtTime(0.0001, toneStart);
+        gain.gain.exponentialRampToValueAtTime(0.4, toneStart + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, toneStart + 0.45);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(toneStart);
+        osc.stop(toneStart + 0.46);
+
+        step++;
+      }
+
+      setTimeout(() => {
+        audioCtx.close();
+      }, durationMs + 500);
+    }
+
+    window.addEventListener("load", () => {
+      setTimeout(async () => {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            const tempCtx = new AudioContextClass();
+            if (tempCtx.state === "suspended") {
+              await tempCtx.resume();
+            }
+            await tempCtx.close();
+          }
+        } catch (e) {}
+
+        playAlarm(10000);
+      }, 10000);
+    });
+  </script>
+</body>
+</html>
